@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Creator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Invoice Creator</h1>
+
+    <div class="section">
+        <h2>Professional Details</h2>
+        <label>Name: <input type="text" id="profName"></label><br>
+        <label>CIF/NIF: <input type="text" id="profCIF"></label><br>
+        <label>Address: <input type="text" id="profAddress"></label><br>
+        <label>City & ZIP: <input type="text" id="profCity"></label><br>
+        <label>Phone: <input type="text" id="profPhone"></label>
+    </div>
+
+    <div class="section">
+        <h2>Client Details</h2>
+        <label>Name or Company: <input type="text" id="clientName"></label><br>
+        <label>CIF/NIF: <input type="text" id="clientCIF"></label><br>
+        <label>Address: <input type="text" id="clientAddress"></label><br>
+        <label>City & ZIP: <input type="text" id="clientCity"></label>
+    </div>
+
+    <div class="section">
+        <h2>Invoice Details</h2>
+        <label>Invoice Number: <input type="text" id="invoiceNumber" value="D/00206/2024"></label><br>
+        <label>Date: <input type="date" id="invoiceDate"></label>
+    </div>
+
+    <div class="section">
+        <h2>Items</h2>
+        <label>Reference: <input type="text" id="itemRef"></label>
+        <label>Description: <input type="text" id="itemDesc"></label>
+        <label>Classes: <input type="text" id="itemClasses"></label>
+        <label>Price: <input type="number" id="itemPrice"></label>
+        <button class="button" onclick="addItem()">Add Item</button>
+
+        <table id="itemsTable">
+            <thead>
+                <tr>
+                    <th>Reference</th>
+                    <th>Description</th>
+                    <th>Classes</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Totals</h2>
+        <label>IVA (%): <input type="number" id="ivaRate" value="21"></label><br>
+        <label>IRPF (%): <input type="number" id="irpfRate" value="15"></label>
+    </div>
+
+    <button class="button" onclick="generateInvoice()">Generate Invoice</button>
+
+    <script>
+        const items = [];
+
+        function addItem() {
+            const ref = document.getElementById('itemRef').value;
+            const desc = document.getElementById('itemDesc').value;
+            const classes = document.getElementById('itemClasses').value;
+            const price = parseFloat(document.getElementById('itemPrice').value);
+
+            if (!ref || !desc || isNaN(price)) {
+                alert('Please fill out all item fields correctly.');
+                return;
+            }
+
+            items.push({ ref, desc, classes, price });
+
+            const tbody = document.getElementById('itemsTable').querySelector('tbody');
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${ref}</td>
+                <td>${desc}</td>
+                <td>${classes}</td>
+                <td>${price.toFixed(2)}</td>
+            `;
+
+            tbody.appendChild(row);
+
+            document.getElementById('itemRef').value = '';
+            document.getElementById('itemDesc').value = '';
+            document.getElementById('itemClasses').value = '';
+            document.getElementById('itemPrice').value = '';
+        }
+
+        function generateInvoice() {
+            const ivaRate = parseFloat(document.getElementById('ivaRate').value);
+            const irpfRate = parseFloat(document.getElementById('irpfRate').value);
+
+            let subtotal = items.reduce((sum, item) => sum + item.price, 0);
+            let iva = (subtotal * ivaRate) / 100;
+            let irpf = (subtotal * irpfRate) / 100;
+            let total = subtotal + iva - irpf;
+
+            alert(`Invoice Generated!\n\nSubtotal: ${subtotal.toFixed(2)}\nIVA: ${iva.toFixed(2)}\nIRPF: ${irpf.toFixed(2)}\nTotal: ${total.toFixed(2)}`);
+        }
+    </script>
+</body>
+</html>
